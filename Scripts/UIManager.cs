@@ -51,7 +51,39 @@ public class UIManager
 
     }
 
-    public GameObject GetSingleObject(UIInfo uiInfo)
+    /*---------------------------------------- 对外暴露的接口 ----------------------------------------*/
+
+    /// <summary>
+    /// 将UIbase压入栈中
+    /// </summary>
+    public void Push(UIBase _uiBase, string _groupName = "None")
+    {
+        PushUIBase(_uiBase, _groupName);
+    }
+
+    public void Pop(bool _isPopAll, string _groupName = "None")
+    {
+        PopUIBase(_isPopAll, _groupName);
+    }
+
+
+    /// <summary>
+    /// 移动UIBase至栈顶
+    /// </summary>
+    public void MoveUIBaseToStackTop(Stack<UIBase> _rootStack, UIBase uiBase)
+    {
+        MoveUIBaseByStackIndex(_rootStack, uiBase, 1);
+    }
+
+
+    /*---------------------------------------- 内部方法 ----------------------------------------*/
+
+    /// <summary>
+    /// 加载并获取UI预制件
+    /// </summary>
+    /// <param name="uiInfo">UI预制件信息</param>
+    /// <returns>加载的预制件</returns>
+    private GameObject GetSingleObject(UIInfo uiInfo)
     {
         if (uiObjectDic.ContainsKey(uiInfo.UIName))
         {
@@ -65,14 +97,13 @@ public class UIManager
 
         GameObject gameObject = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(uiInfo.UIPath), uiCanvasObj.transform);
         return gameObject;
-
     }
 
     /// <summary>
     /// 压入一个UIbase
     /// </summary>
     /// <param name="uiBase"></param>
-    public void PushUIBase(UIBase uiBase, string _groupName = "None")
+    private void PushUIBase(UIBase uiBase, string _groupName = "None")
     {
 
 
@@ -120,7 +151,7 @@ public class UIManager
     /// UIbase出栈
     /// </summary>
     /// <param name="isPopAll">true:Pop全部  false:Pop栈顶</param>
-    public void PopUIBase(bool isPopAll, string _groupName = "None")
+    private void PopUIBase(bool isPopAll, string _groupName = "None")
     {
         Stack<UIBase> uiStack;
 
@@ -173,22 +204,56 @@ public class UIManager
     }
 
     /// <summary>
-    /// 移动栈中的某个UIBase到栈顶
+    /// 移动栈中的某个UIBase到特定位置,栈顶为1
     /// </summary>
-    public void MoveUIBaseToStackTop(Stack<UIBase> _rootStack, UIBase uiBase)
+    private void MoveUIBaseByStackIndex(Stack<UIBase> _rootStack, UIBase uiBase, int _index)
     {
-        if (_rootStack.Count <= 0) return;
-        Stack<UIBase> _localStack = new Stack<UIBase>();
-        for (int index = 0; index < _rootStack.Count; ++index)
+        if (_rootStack.Count <= 0)
         {
-            if(_rootStack.Peek().uiInfo.UIName != uiBase.uiInfo.UIName)
+            Debug.LogWarning("Stack is null!");
+            return;
+        }
+        if (_index < 1 || _index > _rootStack.Count)
+        {
+            Debug.LogWarning("Index ranges from 1 to stack count!");
+            return;
+        }
+
+        Stack<UIBase> _localStack = new Stack<UIBase>();
+        bool _isExist = false;
+        foreach (var _item in _rootStack)
+        {
+            if (_item.uiInfo.UIName == uiBase.uiInfo.UIName)
             {
-                _localStack.Push(_rootStack.Peek());
-                _rootStack.Pop();
+                _isExist = true;
+            }
+            else
+            {
+                _localStack.Push(_item);
             }
         }
 
+        if (_isExist)
+        {
+            _rootStack.Clear();
+        }
+        else 
+        {
+            Debug.LogWarning($"There's no {uiBase.uiInfo.UIName} in the stack");
+            return;
+        }
 
+        for (int i = _localStack.Count + 1; i > 0 ; --i)
+        {
+            if (i == _index)
+            {
+                _rootStack.Push(uiBase);
+            }
+            else
+            {
+                _rootStack.Push(_localStack.Pop());
+            }
+        }
 
     }
 

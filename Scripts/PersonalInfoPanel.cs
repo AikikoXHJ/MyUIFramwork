@@ -18,6 +18,6 @@ public class PersonalInfoPanel : UIBase
 
     public void OnExitBtnClicked()
     {
-        UIManager.GetInstance().PopUIBase(false, "PersonalInfo");
+        UIManager.GetInstance().Pop(false, "PersonalInfo");
     }
 }

@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
         uiManagerRoot.uiCanvasObj = UIFunction.GetInstance().FindCanvas();
 
         //加载主界面
-        uiManagerRoot.PushUIBase(new RootPanel(), "Main");
+        uiManagerRoot.Push(new RootPanel(), "Main");
 
     }
 }

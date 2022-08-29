@@ -56,13 +56,13 @@ public class RootPanel : UIBase
     public void OnInfoBtnClicked()
     {
         Debug.Log("属性按钮被点击");
-        UIManager.GetInstance().PushUIBase(new PersonalInfoPanel(), "PersonalInfo");
+        UIManager.GetInstance().Push(new PersonalInfoPanel(), "PersonalInfo");
     }
 
     public void EquipBtnClicked()
     {
         Debug.Log("装备按钮被点击");
-        UIManager.GetInstance().PushUIBase(new PersonalEquipPanel(), "PersonalInfo");
+        UIManager.GetInstance().Push(new PersonalEquipPanel(), "PersonalInfo");
     }
     #endregion
 
