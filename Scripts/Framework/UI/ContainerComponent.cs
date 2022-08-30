@@ -66,7 +66,7 @@ namespace Client.Library
             {
                 return false;
             }
-
+            
             if (_tar != null && _src != null)
             {
                 return _tar.SequenceEqual(_src);
@@ -74,6 +74,39 @@ namespace Client.Library
 
             return true;
         }
+
+        /// <summary>
+        /// 填充组件
+        /// </summary>
+        /// <param name="_findInChildern">是否寻找子物体的</param>
+        /// <returns></returns>
+        public bool FillComponents(bool _findInChildern = false)
+        {
+            //button
+            var _buttons = this.gameObject.GetComponentsInChildren<Button>(true);
+            var _oldButtons = this.m_buttons;
+
+            //slider
+            var _sliders = this.gameObject.GetComponentsInChildren<Slider>(true);
+            var _oldSliders = this.m_sliders;
+
+            //input
+            var _inputFields = this.gameObject.GetComponentsInChildren<InputField>(true);
+            var _oldInputFields = this.m_inputFields;
+
+
+            if (!CheckContinerEqual(_buttons, _oldButtons) ||
+               !CheckContinerEqual(_sliders, _oldSliders) ||
+               !CheckContinerEqual(_inputFields, _oldInputFields))
+            {
+                this.m_buttons = _buttons;
+                this.m_sliders = _sliders;
+                this.m_inputFields = _inputFields;
+                return true;
+            }
+            return false;
+        }
+
 #endif
 
 
