@@ -11,11 +11,25 @@ namespace Client.UI
     [ExecuteAlways]
     [SelectionBase]
     [DisallowMultipleComponent]
-    public class DragItemContainer : UIBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+    public class DragItemContainer : UIBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
     {
+
+        #region Drag Delegate
+
+        public int index = 0;
+
+        public int siteIndex = 0;
+
+        public bool _isOffset = true; //是否需要UI与点击处的偏差
 
         public GameObject m_dragObject = null;
         private RectTransform m_dragTransform = null;
+
+        private Vector3 _offPos; //存储鼠标点击位置和UI之间的差值
+
+        private bool _isSelf = false; //是否将自己作为移动目标
+
+        #endregion
 
         #region Unity Events
         /// <summary>
@@ -43,13 +57,29 @@ namespace Client.UI
 
         #endregion
 
+        /// <summary>
+        /// 拖拽开始时执行
+        /// </summary>
         public void OnBeginDrag(PointerEventData eventData)
         {
             var _canvas = FindInParents<Canvas>(gameObject);
             if (_canvas == null) return;
-            m_dragObject.SetActive(true);
+            if (!m_dragObject)
+            {
+                m_dragObject = this.gameObject;
+                _isSelf = true;
+            }
+            else if (m_dragObject == this.gameObject)
+            {
+                _isSelf = true;
+            }
+
+            if (!_isSelf)
+            {
+                m_dragObject.SetActive(true);
+                m_dragObject.transform.position = gameObject.transform.position;
+            }
             m_dragObject.transform.SetAsLastSibling();
-            m_dragObject.transform.position = gameObject.transform.position;
 
             m_dragTransform = transform as RectTransform;
             if (!m_dragObject.GetComponent<CanvasGroup>())
@@ -57,41 +87,100 @@ namespace Client.UI
                 var _group = m_dragObject.AddComponent<CanvasGroup>();
                 _group.blocksRaycasts = false;
             }
-
-            var _rect = m_dragObject.GetComponent<RectTransform>();
-            Vector3 _globalMousePos;
-            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(m_dragTransform, eventData.position, eventData.pressEventCamera, out _globalMousePos))
-            {
-                float _diffX = _globalMousePos.x - _rect.position.x;
-                float _diffY = _globalMousePos.y - _rect.position.y;
-            }
-
-           //throw new System.NotImplementedException();
+            SetDraggedPosition(eventData);
         }
 
+        /// <summary>
+        /// 拖拽时执行
+        /// </summary>
         public void OnDrag(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            if (!m_dragObject.activeSelf)
+            {
+                return;
+            }
+            SetDraggedPosition(eventData);
+
+            PointerEventData _eventDataCurPosition = new PointerEventData(EventSystem.current);
+            _eventDataCurPosition.position = eventData.pressEventCamera.WorldToScreenPoint(m_dragObject.transform.position);
+
+            List<RaycastResult> _result = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(_eventDataCurPosition, _result);
+
+            if (_result.Count <= 0)
+            {
+                return;
+            }
+
+            DragItemContainer _obj = null;
+            for (int i = 0; i < _result.Count; ++i)
+            {
+                _obj = FindInParents<DragItemContainer>(_result[i].gameObject);
+                if (_obj)
+                { 
+                    break;
+                }
+            }
+
+            if (!_obj)
+            {
+                return;
+            }
         }
 
-        public void OnDrop(PointerEventData eventData)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        /// <summary>
+        /// 拖拽结束后执行
+        /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            //Debug.Log("OnEndDrag");
+            if (!m_dragObject.activeSelf)
+            {
+                return;
+            }
+            if (!_isSelf)
+            {
+                m_dragObject.SetActive(false);
+            }
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        /// <summary>
+        /// 当光标在UI上按下的时候，获取光标与UII中心的相对位置
+        /// </summary>
+        public void OnPointerDown(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            if (_isOffset)
+            {
+                Vector3 _globalMousePos;
+                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(transform.GetComponent<RectTransform>(), eventData.position, eventData.enterEventCamera, out _globalMousePos))
+                {
+                    _offPos = transform.GetComponent<RectTransform>().position - _globalMousePos;
+                }
+            }
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        /// <summary>
+        /// 设置拖拽物体的位置
+        /// </summary>
+        /// <param name="eventData"></param>
+        private void SetDraggedPosition(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            if (eventData.pointerEnter != null && eventData.pointerEnter.transform as RectTransform != null)
+            {
+                m_dragTransform = eventData.pointerEnter.transform as RectTransform;
+            }
+
+            var _rectTransform = m_dragObject.GetComponent<RectTransform>();
+            Vector3 _globalMousePos;
+
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(m_dragTransform, eventData.position, eventData.pressEventCamera, out _globalMousePos))
+            {
+                _rectTransform.position = new Vector3(_globalMousePos.x + _offPos.x, _globalMousePos.y + _offPos.y, _globalMousePos.z);
+                _rectTransform.rotation = m_dragTransform.rotation;
+            }
+
         }
+
+        
     }
 }
