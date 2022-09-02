@@ -161,6 +161,10 @@ namespace Client.UI
                     _offPos = transform.GetComponent<RectTransform>().position - _globalMousePos;
                 }
             }
+            else
+            {
+                _offPos = new Vector3();
+            }
         }
 
         /// <summary>
