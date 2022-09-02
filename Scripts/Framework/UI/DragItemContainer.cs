@@ -16,12 +16,16 @@ namespace Client.UI
 
         #region Drag Delegate
 
+        public NoneParamDelegate DragStart;
+        public NoneParamDelegate DragEnd;
+
+        [Header("拖拽体索引")]
         public int index = 0;
-
+        [Header("拖拽体地位")]
         public int siteIndex = 0;
-
+        [Header("是否设置点击处偏差")]
         public bool _isOffset = true; //是否需要UI与点击处的偏差
-
+        [Header("拖拽物体")]
         public GameObject m_dragObject = null;
         private RectTransform m_dragTransform = null;
 
@@ -133,7 +137,6 @@ namespace Client.UI
         /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
-            //Debug.Log("OnEndDrag");
             if (!m_dragObject.activeSelf)
             {
                 return;
@@ -142,6 +145,7 @@ namespace Client.UI
             {
                 m_dragObject.SetActive(false);
             }
+            DragEnd?.Invoke();
         }
 
         /// <summary>

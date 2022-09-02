@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Client.UI;
 
 public class PersonalInfoPanel : UIBase
 {
@@ -14,6 +15,14 @@ public class PersonalInfoPanel : UIBase
     {
         base.OnStart();
         UIFunction.GetInstance().GetSingleComponentInChild<Button>(activeObj, "ExitButton").onClick.AddListener(OnExitBtnClicked);
+
+        var _selfDrag = UIFunction.GetInstance().GetSingleComponentInChild<DragItemContainer>(activeObj, activeObj.name);
+        _selfDrag.DragEnd += new NoneParamDelegate(DragEndTest);
+    }
+
+    public void DragEndTest()
+    {
+        Debug.Log("这里是测试拖拽结束！");
     }
 
     public void OnExitBtnClicked()
