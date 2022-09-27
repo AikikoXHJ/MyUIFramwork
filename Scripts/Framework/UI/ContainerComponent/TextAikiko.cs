@@ -5,12 +5,8 @@ using UnityEngine.UI;
 
 namespace Client.UI
 {
-    public class ImageAikiko : Image
+    public class TextAikiko : Text
     {
-
-        #region Private Attributes
-
-        #endregion
 
     }
 }

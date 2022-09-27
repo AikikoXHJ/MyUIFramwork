@@ -70,7 +70,7 @@ namespace Client.UI
         /// <param name="_name"></param>
         /// <param name="_parent"></param>
         /// <returns></returns>
-        private GameObject CreateUIObject(string _name, GameObject _parent)
+        private static GameObject CreateUIObject(string _name, GameObject _parent)
         {
             GameObject _obj = new GameObject(_name);
             _obj.AddComponent<RectTransform>();
@@ -85,7 +85,6 @@ namespace Client.UI
         private static void SetDefaultTextValues(Text _lbl)
         {
             _lbl.name = "AikikoTxt";
-            _lbl.text = "AikikoTxtComponent";
             _lbl.color = s_TextColor;
         }
 
@@ -135,6 +134,120 @@ namespace Client.UI
             _image.raycastTarget = false;
 
             return _panelRoot;
+        }
+
+        /// <summary>
+        /// 创建Button组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateButton(DefaultControls.Resources _resources)
+        {
+            //创建Button根节点
+            GameObject _buttonRoot = CreateUIElementRoot("Button", s_ThickElementSize);
+
+            //创建子物体Text组件
+            GameObject _childText = new GameObject("Text");
+            SetParentAndAlign(_childText, _buttonRoot);
+
+            //设置Button上的Image组件
+            Image _image = _buttonRoot.AddComponent<ImageAikiko>();
+            _image.sprite = _resources.standard;
+            _image.type = Image.Type.Sliced;
+            _image.color = s_DefaultSelectableColor;
+
+            Button _button = _buttonRoot.AddComponent<ButtonAikiko>();
+            SetDefaultColorTransitionValues(_button);
+
+            //设置子物体Text上的Text组件
+            Text _text = _childText.AddComponent<TextAikiko>();
+            _text.text = "ButtonAikiko";
+            _text.alignment = TextAnchor.MiddleCenter;
+            SetDefaultTextValues(_text);
+            _text.raycastTarget = false;
+
+            //设置根节点
+            RectTransform _rectTransform = _childText.GetComponent<RectTransform>();
+            _rectTransform.anchorMin = Vector2.zero;
+            _rectTransform.anchorMax = Vector2.one;
+            _rectTransform.sizeDelta = Vector2.zero;
+
+            return _buttonRoot;
+        }
+
+        /// <summary>
+        /// 创建Text组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateText(DefaultControls.Resources _resources)
+        {
+            GameObject _textRoot = CreateUIElementRoot("Text", s_ThickElementSize);
+
+            Text _text = _textRoot.AddComponent<TextAikiko>();
+            _text.text = "New AikikoText";
+            SetDefaultTextValues(_text);
+            _text.raycastTarget = false;
+
+            return _textRoot;
+        }
+
+        /// <summary>
+        /// 创建Image组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateImage(DefaultControls.Resources _resources)
+        {
+            GameObject _imageRoot = CreateUIElementRoot("Image", s_ImageElementSize);
+
+            Image _imageAikiko = _imageRoot.AddComponent<ImageAikiko>();
+            _imageAikiko.sprite = _resources.standard;
+            _imageAikiko.type = Image.Type.Sliced;
+            _imageAikiko.color = s_DefaultSelectableColor;
+            _imageAikiko.raycastTarget = false;
+
+            return _imageRoot;
+        }
+
+        /// <summary>
+        /// 创建RawImage组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateRawImage(DefaultControls.Resources _resources)
+        {
+            GameObject _rawImageRoot = CreateUIElementRoot("RawImage", s_ImageElementSize);
+
+            _rawImageRoot.AddComponent<RawImageAikiko>();
+
+            return _rawImageRoot;
+        }
+
+        public static GameObject CreateSlider(DefaultControls.Resources _resources)
+        {
+            // 创建Slider所需各层
+            GameObject _sliderRoot = CreateUIElementRoot("Slider", s_ThinElementSize);
+
+            GameObject _background = CreateUIObject("Background", _sliderRoot);
+            GameObject _fillArea = CreateUIObject("Fill Area", _sliderRoot);
+            GameObject _fill = CreateUIObject("Fill", _fillArea);
+            GameObject _handleArea = CreateUIObject("Handle Slide Area", _sliderRoot);
+            GameObject _handle = CreateUIObject("Handle", _handleArea);
+
+            //设置background
+            Image _backgroundImage = _background.AddComponent<ImageAikiko>();
+            _backgroundImage.sprite = _resources.background;
+            _backgroundImage.type = Image.Type.Sliced;
+            _backgroundImage.color = s_DefaultSelectableColor;
+            RectTransform _backgroundRect = _background.GetComponent<RectTransform>();
+            _backgroundRect.anchorMin = new Vector2(0, 0.25f);
+            _backgroundRect.anchorMax = new Vector2(1, 0.75f);
+            _backgroundRect.sizeDelta = new Vector2(0, 0);
+
+
+
+            return _sliderRoot;
         }
 
         #endregion
