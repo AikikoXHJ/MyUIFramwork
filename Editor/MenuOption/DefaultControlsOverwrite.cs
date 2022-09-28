@@ -224,9 +224,14 @@ namespace Client.UI
             return _rawImageRoot;
         }
 
+        /// <summary>
+        /// 创建Slider组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
         public static GameObject CreateSlider(DefaultControls.Resources _resources)
         {
-            // 创建Slider所需各层
+            //创建Slider所需各层
             GameObject _sliderRoot = CreateUIElementRoot("Slider", s_ThinElementSize);
 
             GameObject _background = CreateUIObject("Background", _sliderRoot);
@@ -245,9 +250,191 @@ namespace Client.UI
             _backgroundRect.anchorMax = new Vector2(1, 0.75f);
             _backgroundRect.sizeDelta = new Vector2(0, 0);
 
+            //设置Fill Area 进度条父节点
+            RectTransform _fillAreaRect = _fillArea.GetComponent<RectTransform>();
+            _fillAreaRect.anchorMin = new Vector2(0, 0.25f);
+            _fillAreaRect.anchorMax = new Vector2(1, 0.75f);
+            _fillAreaRect.anchoredPosition = new Vector2(-5, 0);
+            _fillAreaRect.sizeDelta = new Vector2(-20, 0);
 
+            //设置Fill 进度条
+            Image _fillImage = _fill.AddComponent<ImageAikiko>();
+            _fillImage.sprite = _resources.standard;
+            _fillImage.type = Image.Type.Sliced;
+            _fillImage.color = s_DefaultSelectableColor;
+            RectTransform _fillRect = _fill.GetComponent<RectTransform>();
+            _fillRect.sizeDelta = new Vector2(10, 0);
+
+            //设置Handle Area 拖动按钮父节点
+            RectTransform _handleAreaRect = _handleArea.GetComponent<RectTransform>();
+            _handleAreaRect.sizeDelta = new Vector2(-20, 0);
+            _handleAreaRect.anchorMin = new Vector2(0, 0);
+            _handleAreaRect.anchorMax = new Vector2(1, 1);
+
+            //设置Handle 拖动按钮
+            Image _handleImage = _handle.AddComponent<ImageAikiko>();
+            _handleImage.sprite = _resources.knob;
+            _handleImage.color = s_DefaultSelectableColor;
+            RectTransform _handleRect = _handle.GetComponent<RectTransform>();
+            _handleRect.sizeDelta = new Vector2(20, 0);
+
+            //设置slider组件
+            Slider _slider = _sliderRoot.AddComponent<SliderAikiko>();
+            _slider.fillRect = _fill.GetComponent<RectTransform>();
+            _slider.handleRect = _handle.GetComponent<RectTransform>();
+            _slider.targetGraphic = _handleImage;
+            _slider.direction = Slider.Direction.LeftToRight;
+            SetDefaultColorTransitionValues(_slider);
 
             return _sliderRoot;
+        }
+
+        /// <summary>
+        /// 创建Scrollbar组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateScrollbar(DefaultControls.Resources _resources)
+        {
+            //创建Scrollbar所需层级
+            GameObject _scrollbarRoot = CreateUIElementRoot("Scrollbar", s_ThinElementSize);
+
+            GameObject _sliderArea = CreateUIObject("Sliding Area", _scrollbarRoot);
+            GameObject _handle = CreateUIObject("Handle", _sliderArea);
+
+            //设置背景
+            Image _backgroundImage = _scrollbarRoot.AddComponent<ImageAikiko>();
+            _backgroundImage.sprite = _resources.background;
+            _backgroundImage.type = Image.Type.Sliced;
+            _backgroundImage.color = s_DefaultSelectableColor;
+
+            //设置Handle Area 活动按钮父节点
+            RectTransform _sliderAreaRect = _sliderArea.GetComponent<RectTransform>();
+            _sliderAreaRect.sizeDelta = new Vector2(-20, -20);
+            _sliderAreaRect.anchorMin = Vector2.zero;
+            _sliderAreaRect.anchorMax = Vector2.one;
+
+            //设置Handle 滑动按钮
+            Image _handleImage = _handle.AddComponent<ImageAikiko>();
+            _handleImage.sprite = _resources.standard;
+            _handleImage.type = Image.Type.Sliced;
+            _handleImage.color = s_DefaultSelectableColor;
+            RectTransform _handleRect = _handle.GetComponent<RectTransform>();
+            _handleRect.sizeDelta = new Vector2(20, 20);
+
+            //设置Scrollbar组件
+            Scrollbar _scrollbar = _scrollbarRoot.AddComponent<ScrollbarAikiko>();
+            _scrollbar.handleRect = _handleRect;
+            _scrollbar.targetGraphic = _handleImage;
+            SetDefaultColorTransitionValues(_scrollbar);
+
+            return _scrollbarRoot;
+        }
+
+        /// <summary>
+        /// 创建Toggle组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateToggle(DefaultControls.Resources _resources)
+        {
+            //创建Toggle所需层级
+            GameObject _toggleRoot = CreateUIElementRoot("Toggle", s_ThinElementSize);
+
+            GameObject _background = CreateUIObject("Background", _toggleRoot);
+            GameObject _checkmark = CreateUIObject("Checkmark", _toggleRoot);
+            GameObject _childLabel = CreateUIObject("Label", _toggleRoot);
+
+            //设置勾选框背景图
+            Image _backgroundImage = _background.AddComponent<ImageAikiko>();
+            _backgroundImage.sprite = _resources.standard;
+            _backgroundImage.type = Image.Type.Sliced;
+            _backgroundImage.color = s_DefaultSelectableColor;
+            RectTransform _backgroundRect = _background.GetComponent<RectTransform>();
+            _backgroundRect.anchorMin = new Vector2(0f, 1f);
+            _backgroundRect.anchorMax = new Vector2(0f, 1f);
+            _backgroundRect.anchoredPosition = new Vector2(0, -10);
+            _backgroundRect.sizeDelta = new Vector2(kThickHeight, kThinHeight);
+
+            //设置勾选图片
+            Image _checkmarkImage = _checkmark.AddComponent<ImageAikiko>();
+            _checkmarkImage.sprite = _resources.checkmark;
+            RectTransform _checkmarkRect = _checkmark.GetComponent<RectTransform>();
+            _checkmarkRect.anchorMin = new Vector2(0.5f, 0.5f);
+            _checkmarkRect.anchorMax = new Vector2(0.5f, 0.5f);
+            _checkmarkRect.anchoredPosition = Vector2.zero;
+            _checkmarkRect.sizeDelta = new Vector2(20f, 20f);
+
+            //设置Text组件
+            Text _text = _childLabel.AddComponent<TextAikiko>();
+            _text.text = "Toggle";
+            SetDefaultTextValues(_text);
+            _text.raycastTarget = false;
+            RectTransform _labelRect = _childLabel.GetComponent<RectTransform>();
+            _labelRect.anchorMin = new Vector2(0f, 0f);
+            _labelRect.anchorMax = new Vector2(1f, 1f);
+            _labelRect.offsetMin = new Vector2(23f, 1f);
+            _labelRect.offsetMax = new Vector2(-5f, -2f);
+
+            //设置Toggle组件
+            Toggle _toggle = _toggleRoot.AddComponent<ToggleAikiko>();
+            _toggle.isOn = true;
+            _toggle.graphic = _checkmarkImage;
+            _toggle.targetGraphic = _backgroundImage;
+            SetDefaultColorTransitionValues(_toggle);
+
+            return _toggleRoot;
+        }
+
+        public static GameObject CreateInputField(DefaultControls.Resources _resources)
+        {
+            //创建InputField所需层级
+            GameObject _inputFieldRoot = CreateUIElementRoot("InputField", s_ThickElementSize);
+
+            GameObject _childPlaceholder = CreateUIObject("Placeholder", _inputFieldRoot);
+            GameObject _childText = CreateUIObject("Text", _inputFieldRoot);
+
+            //设置Text组件
+            Text _text = _childText.AddComponent<TextAikiko>();
+            _text.text = "";
+            _text.supportRichText = false;
+            SetDefaultTextValues(_text);
+            _text.raycastTarget = false;
+            RectTransform _textRect = _childText.GetComponent<RectTransform>();
+            _textRect.anchorMin = Vector2.zero;
+            _textRect.anchorMax = Vector2.one;
+            _textRect.sizeDelta = Vector2.zero;
+            _textRect.offsetMin = new Vector2(10, 6);
+            _textRect.offsetMax = new Vector2(-10, -7);
+
+            //设置Placeholder组件
+            Text _placeholder = _childPlaceholder.AddComponent<TextAikiko>();
+            _placeholder.text = "Enter text...";
+            _placeholder.fontStyle = FontStyle.Italic; //设置斜体
+            //将placeholder设置为半透明
+            Color _placeholderColor = _text.color;
+            _placeholderColor.a *= 0.5f;
+            _placeholder.color = _placeholderColor;
+            _placeholder.raycastTarget = false;
+            RectTransform _placeholderRect = _childPlaceholder.GetComponent<RectTransform>();
+            _placeholderRect.anchorMin = Vector2.zero;
+            _placeholderRect.anchorMax = Vector2.one;
+            _placeholderRect.sizeDelta = Vector2.zero;
+            _placeholderRect.offsetMin = new Vector2(10, 6);
+            _placeholderRect.offsetMax = new Vector2(-10, -7);
+
+            //设置InputField组件
+            Image _backgroundImage = _inputFieldRoot.AddComponent<ImageAikiko>();
+            _backgroundImage.sprite = _resources.inputField;
+            _backgroundImage.type = Image.Type.Sliced;
+            _backgroundImage.color = s_DefaultSelectableColor;
+
+            InputField _inputField = _inputFieldRoot.AddComponent<InputFieldAiko>();
+            SetDefaultColorTransitionValues(_inputField);
+            _inputField.textComponent = _text;
+            _inputField.placeholder = _placeholder;
+
+            return _inputFieldRoot;
         }
 
         #endregion
