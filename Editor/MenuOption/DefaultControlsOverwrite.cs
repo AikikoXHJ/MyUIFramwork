@@ -386,6 +386,11 @@ namespace Client.UI
             return _toggleRoot;
         }
 
+        /// <summary>
+        /// 创建InputField组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
         public static GameObject CreateInputField(DefaultControls.Resources _resources)
         {
             //创建InputField所需层级
@@ -435,6 +440,79 @@ namespace Client.UI
             _inputField.placeholder = _placeholder;
 
             return _inputFieldRoot;
+        }
+
+        /// <summary>
+        /// 创建Dropdown组件
+        /// </summary>
+        /// <param name="_resources"></param>
+        /// <returns></returns>
+        public static GameObject CreateDropdown(DefaultControls.Resources _resources)
+        {
+            //创建Dropdown所需层级
+            GameObject _dropdownRoot = CreateUIElementRoot("Dropdown", s_ThickElementSize);
+
+            GameObject _label = CreateUIObject("Label", _dropdownRoot); //标题
+            GameObject _arrow = CreateUIObject("Arrow", _dropdownRoot); //下拉框图标
+            GameObject _template = CreateUIObject("Template", _dropdownRoot);
+            GameObject _viewport = CreateUIObject("Viewport", _template);
+            GameObject _content = CreateUIObject("Content", _viewport);
+            GameObject _item = CreateUIObject("Item", _content);
+            GameObject _itemBackground = CreateUIObject("Item Background", _item);
+            GameObject _itemCheckmark = CreateUIObject("Item Checkmark", _item);
+            GameObject _itemLabel = CreateUIObject("Item Label", _item);
+
+            //子控件
+            GameObject _scrollbar = CreateScrollbar(_resources);
+            _scrollbar.name = "Scrollbar";
+            SetParentAndAlign(_scrollbar, _template);
+            Scrollbar _scrollbarScrollbar = _scrollbar.GetComponent<ScrollbarAikiko>();
+            _scrollbarScrollbar.SetDirection(Scrollbar.Direction.BottomToTop, true);
+            RectTransform _scrollbarRect = _scrollbar.GetComponent<RectTransform>();
+            _scrollbarRect.anchorMin = Vector2.right;
+            _scrollbarRect.anchorMax = Vector2.one;
+            _scrollbarRect.pivot = Vector2.one;
+            _scrollbarRect.sizeDelta = new Vector2(_scrollbarRect.sizeDelta.x, 0);
+
+            //设置Item
+            Text _itemLabelText = _itemLabel.AddComponent<TextAikiko>();
+            SetDefaultTextValues(_itemLabelText);
+            _itemLabelText.alignment = TextAnchor.MiddleLeft;
+            _itemLabelText.raycastTarget = false;
+
+            Image _itemBackgroundImage = _itemBackground.AddComponent<ImageAikiko>();
+            _itemBackgroundImage.color = new Color32(245, 245, 245, 255);
+
+            Image _itemCheckmarkImage = _itemCheckmark.AddComponent<ImageAikiko>();
+            _itemCheckmarkImage.sprite = _resources.checkmark;
+
+            //设置Item里的勾选框Toggle组件
+            Toggle _itemToggle = _item.AddComponent<ToggleAikiko>();
+            _itemToggle.targetGraphic = _itemBackgroundImage;
+            _itemToggle.graphic = _itemCheckmarkImage;
+            _itemToggle.isOn = true;
+
+            //设置Template
+            Image _templateImage = _template.AddComponent<ImageAikiko>();
+            _templateImage.sprite = _resources.standard;
+            _templateImage.type = Image.Type.Sliced;
+
+            ScrollRect _templateScrollRect = _template.AddComponent<ScrollRectAikiko>();
+            _templateScrollRect.content = (RectTransform)_content.transform;
+            _templateScrollRect.viewport = (RectTransform)_viewport.transform;
+            _templateScrollRect.horizontal = false;
+            _templateScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            _templateScrollRect.verticalScrollbar = _scrollbarScrollbar;
+            _templateScrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+            _templateScrollRect.verticalScrollbarSpacing = -3;
+
+            Mask _scrollRectMask = _viewport.AddComponent<MaskAikiko>();
+            _scrollRectMask.showMaskGraphic = false;
+
+            Image _viewportImage = _viewport.AddComponent<ImageAikiko>();
+            _viewportImage.sprite = _resources.mask;
+            _viewportImage.type = Image.Type.Sliced;
+
         }
 
         #endregion
