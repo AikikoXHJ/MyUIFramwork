@@ -513,6 +513,92 @@ namespace Client.UI
             _viewportImage.sprite = _resources.mask;
             _viewportImage.type = Image.Type.Sliced;
 
+            //设置下拉UI组件
+            Text _labelText = _label.AddComponent<TextAikiko>();
+            SetDefaultTextValues(_labelText);
+            _labelText.text = "Option A";
+            _labelText.alignment = TextAnchor.MiddleLeft;
+            _labelText.raycastTarget = false;
+
+            Image _arrowImage = _arrow.AddComponent<ImageAikiko>();
+            _arrowImage.sprite = _resources.dropdown;
+
+            Image _backgroundImage = _dropdownRoot.AddComponent<ImageAikiko>();
+            _backgroundImage.sprite = _resources.standard;
+            _backgroundImage.color = s_DefaultSelectableColor;
+            _backgroundImage.type = Image.Type.Sliced;
+
+            Dropdown _dropdown = _dropdownRoot.AddComponent<DropdownAikiko>();
+            _dropdown.targetGraphic = _backgroundImage;
+            SetDefaultColorTransitionValues(_dropdown);
+            _dropdown.template = _template.GetComponent<RectTransform>();
+            _dropdown.captionText = _labelText;
+            _dropdown.itemText = _itemLabelText;
+
+            //设置默认下拉Item列表
+            _itemLabelText.text = "Option A";
+            _dropdown.options.Add(new Dropdown.OptionData { text = "Option A" });
+            _dropdown.options.Add(new Dropdown.OptionData { text = "Option B" });
+            _dropdown.options.Add(new Dropdown.OptionData { text = "Option C" });
+
+            //设置 RectTransforms
+            RectTransform _labelRect = _label.GetComponent<RectTransform>();
+            _labelRect.anchorMin = Vector2.zero;
+            _labelRect.anchorMax = Vector2.one;
+            _labelRect.offsetMin = new Vector2(10, 6);
+            _labelRect.offsetMax = new Vector2(-25, -7);
+
+            RectTransform _arrowRect = _arrow.GetComponent<RectTransform>();
+            _arrowRect.anchorMin = new Vector2(1, 0.5f);
+            _arrowRect.anchorMax = new Vector2(1, 0.5f);
+            _arrowRect.sizeDelta = new Vector2(20, 20);
+            _arrowRect.anchoredPosition = new Vector2(-15, 0);
+
+            RectTransform _templateRect = _template.GetComponent<RectTransform>();
+            _templateRect.anchorMin = new Vector2(0, 0);
+            _templateRect.anchorMax = new Vector2(1, 0);
+            _templateRect.pivot = new Vector2(0.5f, 1);
+            _templateRect.anchoredPosition = new Vector2(0, 2);
+            _templateRect.sizeDelta = new Vector2(0, 150);
+
+            RectTransform _viewportRect = _viewport.GetComponent<RectTransform>();
+            _viewportRect.anchorMin = new Vector2(0, 0);
+            _viewportRect.anchorMax = new Vector2(1, 1);
+            _viewportRect.sizeDelta = new Vector2(-18, 0);
+            _viewportRect.pivot = new Vector2(0, 1);
+
+            RectTransform _contentRect = _content.GetComponent<RectTransform>();
+            _contentRect.anchorMin = new Vector2(0, 1);
+            _contentRect.anchorMax = new Vector2(1, 1);
+            _contentRect.pivot = new Vector2(0.5f, 1);
+            _contentRect.anchoredPosition = new Vector2(0, 0);
+            _contentRect.sizeDelta = new Vector2(0, 28);
+
+            RectTransform _itemRect = _item.GetComponent<RectTransform>();
+            _itemRect.anchorMin = new Vector2(0, 0.5f);
+            _itemRect.anchorMax = new Vector2(1, 0.5f);
+            _itemRect.sizeDelta = new Vector2(0, 20);
+
+            RectTransform _itemBackgroundRect = _itemBackground.GetComponent<RectTransform>();
+            _itemBackgroundRect.anchorMin = Vector2.zero;
+            _itemBackgroundRect.anchorMax = Vector2.one;
+            _itemBackgroundRect.sizeDelta = Vector2.zero;
+
+            RectTransform _itemCheckmarkRect = _itemCheckmark.GetComponent<RectTransform>();
+            _itemCheckmarkRect.anchorMin = new Vector2(0, 0.5f);
+            _itemCheckmarkRect.anchorMax = new Vector2(0, 0.5f);
+            _itemCheckmarkRect.sizeDelta = new Vector2(20, 20);
+            _itemBackgroundRect.anchoredPosition = new Vector2(10, 0);
+
+            RectTransform _itemLabelRect = _itemLabel.GetComponent<RectTransform>();
+            _itemLabelRect.anchorMin = Vector2.zero;
+            _itemLabelRect.anchorMax = Vector2.one;
+            _itemLabelRect.offsetMin = new Vector2(20, 1);
+            _itemLabelRect.offsetMax = new Vector2(-10, -2);
+
+            _template.SetActive(false);
+
+            return _dropdownRoot;
         }
 
         #endregion
